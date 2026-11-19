@@ -1,0 +1,78 @@
+{
+  "id": "INC-2026-11-15-001",
+  "service": "checkout-api",
+  "namespace": "prod",
+  "severity": "HIGH",
+  "status": "resolved",
+  "last_exit_code": 137,
+  "last_terminated_reason": "OOMKilled",
+  "memory_usage_mi": 511,
+  "memory_limit_mi": 512,
+  "log_snippet": "java.lang.OutOfMemoryError: Java heap space",
+  "timeline": [
+    {
+      "ts": "2026-11-15T14:22:05Z",
+      "phase": "mitigation",
+      "actor_role": "On-Call Engineer",
+      "description": "Error rate back to normal; checkout-api healthy on all replicas."
+    },
+    {
+      "ts": "2026-11-15T13:58:12Z",
+      "phase": "other",
+      "actor_role": "Kubernetes",
+      "description": "checkout-api pod checkout-api-7d9f8 enters CrashLoopBackOff; restarts begin."
+    },
+    {
+      "ts": "2026-11-15T14:31:00Z",
+      "phase": "resolution",
+      "actor_role": "On-Call Engineer",
+      "description": "Incident declared resolved after 9 minutes of healthy service; monitoring continued."
+    },
+    {
+      "ts": "2026-11-15T14:02:00Z",
+      "phase": "detection",
+      "actor_role": "Alerting system",
+      "description": "Alert fired: checkout-api CrashLoopBackOff in prod."
+    },
+    {
+      "ts": "2026-11-15T14:05:30Z",
+      "phase": "acknowledgement",
+      "actor_role": "On-Call Engineer",
+      "description": "Alert acknowledged; on-call responder started investigation."
+    },
+    {
+      "ts": "2026-11-15T14:09:15Z",
+      "phase": "triage",
+      "actor_role": "On-Call Engineer",
+      "description": "Triage identified OOMKilled: exit code 137, memory usage 511Mi of 512Mi limit, 12 restarts in 10 minutes."
+    },
+    {
+      "ts": "2026-11-15T14:16:40Z",
+      "phase": "mitigation",
+      "actor_role": "Platform Engineer",
+      "description": "Memory limit raised from 512Mi to 768Mi and the deployment rolled out."
+    }
+  ],
+  "triage": {
+    "probable_cause": "OOMKilled \u2014 container exceeded its memory limit",
+    "confidence": 0.86,
+    "severity": "HIGH",
+    "signals": [
+      "memory usage 511Mi / 512Mi limit",
+      "last exit code 137 (OOMKilled)",
+      "restarts=12 in 10m"
+    ]
+  },
+  "impact": {
+    "services_affected": [
+      "checkout-api"
+    ],
+    "users_affected_approx": 860,
+    "failed_requests": 1240,
+    "description": "Checkout was intermittently unavailable between 14:02 and 14:22 UTC; 38% of checkout requests returned 5xx at the peak. No payment was taken twice and no order data was lost."
+  },
+  "contributing_factors": [
+    "The checkout-api memory limit was set at deployment time and had not been reviewed against current usage.",
+    "Memory usage grows with request volume, so the limit was reached during the morning traffic peak."
+  ]
+}

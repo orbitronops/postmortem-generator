@@ -1,0 +1,2 @@
+{"action_executed": false, "confidence": 0.86, "event": "triage", "incident_id": "INC-2026-11-15-001", "probable_cause": "OOMKilled \u2014 container exceeded its memory limit", "service": "checkout-api", "severity": "HIGH", "ts": "2026-11-15T14:09:15Z"}
+{"action_executed": false, "approved_action": "Raise memory limit to 768Mi (read-only review, human-approved)", "approver_role": "Platform Engineer", "event": "approval", "incident_id": "INC-2026-11-15-001", "service": "checkout-api", "ts": "2026-11-15T14:16:40Z"}
